@@ -1,0 +1,28 @@
+syntax = "proto3";
+package couscous;
+
+service Couscous {
+    rpc NewChannel(NewChannelRequest) returns (Chat);
+    rpc Discuss(MessageRequest) returns (MessageResponse);
+    rpc DeleteChannel(Chat) returns (Deletion);
+}
+
+message NewChannelRequest {}
+
+message Chat {
+    string id = 1;
+}
+
+message MessageRequest {
+    string message = 1;
+    string chat_id = 2;
+}
+
+message MessageResponse {
+    string message = 1;
+}
+
+message Deletion {
+    string id = 1;
+    bool status = 2;
+}

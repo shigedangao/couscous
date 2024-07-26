@@ -1,0 +1,16 @@
+[package]
+name = "couscous"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+kalosm = { version = "0.2.2", features = ["language", "metal"], default-features = false }
+kalosm-llama = "0.2.2"
+tokio = { version = "1.38.1", features = ["full"] }
+tonic = "0.12"
+prost = "0.13"
+uuid = { version = "1.10.0", features = ["v4", "fast-rng", "macro-diagnostics"] }
+tonic-reflection = "0.12.1"
+
+[build-dependencies]
+tonic-build = "0.12"
