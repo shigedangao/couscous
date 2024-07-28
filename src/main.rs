@@ -10,12 +10,14 @@ mod server;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let chat_handler = Handler::new()?;
+    let mut chat_handler = Handler::new()?;
+    chat_handler.load().await?;
+    println!("Loading existing chat is finished");
 
     // Initialize the server
     let addr = "127.0.0.1:50051".parse()?;
     let srv = Rpc {
-        chat: Arc::new(chat_handler)
+        chat: Arc::new(chat_handler),
     };
 
     let reflection_service = tonic_reflection::server::Builder::configure()

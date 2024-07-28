@@ -2,7 +2,7 @@ pub mod include;
 
 use crate::chat::Handler;
 use include::couscous::couscous_server::Couscous;
-use include::couscous::{Chat, Deletion, MessageRequest, MessageResponse, NewChannelRequest};
+use include::couscous::{Chat, MessageRequest, MessageResponse, NewChannelRequest};
 use std::sync::Arc;
 use tonic::{Request, Response, Status};
 
@@ -31,11 +31,7 @@ impl Couscous for Rpc {
 
         match handler.send_message(&params.chat_id, &params.message).await {
             Ok(message) => Ok(Response::new(MessageResponse { message })),
-            Err(err) => Err(Status::internal(err.to_string()))
+            Err(err) => Err(Status::internal(err.to_string())),
         }
-    }
-
-    async fn delete_channel(&self, _: Request<Chat>) -> Result<Response<Deletion>, Status> {
-        unimplemented!()
     }
 }
