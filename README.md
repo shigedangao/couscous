@@ -10,7 +10,7 @@ The cargo.toml specified metal for osx performance improvement.
 
 The API allows to create multiple chats. You can create a chat by querying the grpc endpoint
 
-````curl
+```curl
 grpcurl -plaintext 127.0.0.1:50051 couscous.Couscous/NewChannel
 ```
 
