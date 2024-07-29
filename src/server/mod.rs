@@ -1,9 +1,12 @@
 pub mod include;
+mod msg;
 
 use crate::chat::Handler;
 use include::couscous::couscous_server::Couscous;
 use include::couscous::{Chat, MessageRequest, MessageResponse, NewChannelRequest};
 use std::sync::Arc;
+use tokio::sync::mpsc;
+use tokio_stream::wrappers::ReceiverStream;
 use tonic::{Request, Response, Status};
 
 #[derive(Default)]
@@ -22,16 +25,23 @@ impl Couscous for Rpc {
         }
     }
 
+    type DiscussStream = ReceiverStream<Result<MessageResponse, Status>>;
+
     async fn discuss(
         &self,
         request: Request<MessageRequest>,
-    ) -> Result<Response<MessageResponse>, Status> {
+    ) -> Result<Response<Self::DiscussStream>, Status> {
+        let (tx, rx) = mpsc::channel(4);
         let handler = self.chat.clone();
         let params = request.into_inner();
 
-        match handler.send_message(&params.chat_id, &params.message).await {
-            Ok(message) => Ok(Response::new(MessageResponse { message })),
-            Err(err) => Err(Status::internal(err.to_string())),
-        }
+        tokio::spawn(async move {
+            handler
+                .send_message(&params.chat_id, &params.message, tx)
+                .await
+                .unwrap();
+        });
+
+        Ok(Response::new(ReceiverStream::new(rx)))
     }
 }

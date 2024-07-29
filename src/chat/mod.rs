@@ -1,4 +1,3 @@
-use kalosm_llama::{Llama, LlamaSource};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::io::ErrorKind;
@@ -7,6 +6,7 @@ use std::sync::Arc;
 use tokio::sync::mpsc::{Receiver, Sender};
 use tokio::sync::Mutex;
 use tokio::task::JoinSet;
+use tonic::Status;
 use uuid::Uuid;
 
 mod session;
@@ -32,7 +32,7 @@ pub struct Handler<T> {
 }
 
 impl Handler<String> {
-    pub fn new() -> Result<Self, Box<dyn std::error::Error>> {
+    pub async fn new() -> Result<Self, Box<dyn std::error::Error>> {
         Ok(Self {
             stored_chats_path: PathBuf::from(format!("./{}.json", STORED_UID_PATH)),
             ..Default::default()
@@ -57,14 +57,12 @@ impl Handler<String> {
         self.stored_chats = Arc::new(Mutex::new(chats.clone()));
 
         let mut set = JoinSet::new();
-        for uid in chats.uids {
-            let model = Llama::builder()
-                .with_source(LlamaSource::llama_7b_chat())
-                .build()?;
 
+        for uid in chats.uids {
             let path = PathBuf::from(format!("./{}.llama", uid));
+
             set.spawn(async move {
-                let (tx, rx, uid) = session::create_session(model, uid, Some(path));
+                let (tx, rx, uid) = session::create_session(uid, Some(path));
 
                 (tx, rx, uid)
             });
@@ -84,11 +82,8 @@ impl Handler<String> {
 
     pub async fn new_chat(&self) -> Result<String, Box<dyn std::error::Error>> {
         let uid = Uuid::new_v4().to_string();
-        let model = Llama::builder()
-            .with_source(LlamaSource::llama_7b_chat())
-            .build()?;
 
-        let channel = self.start_chat_session(model, uid.clone(), None).await;
+        let channel = self.start_chat_session(uid.clone(), None).await;
 
         // Store the chat in the handler for later usage
         let handle = self.chats.clone();
@@ -106,11 +101,10 @@ impl Handler<String> {
 
     async fn start_chat_session(
         &self,
-        model: Llama,
         uid: String,
         existing_session: Option<PathBuf>,
     ) -> Channel<String> {
-        let (tx_client, rx_chat, _) = session::create_session(model, uid, existing_session);
+        let (tx_client, rx_chat, _) = session::create_session(uid, existing_session);
 
         Channel {
             tx: tx_client,
@@ -118,11 +112,15 @@ impl Handler<String> {
         }
     }
 
-    pub async fn send_message(
+    pub async fn send_message<T>(
         &self,
         uuid: &str,
         msg: &str,
-    ) -> Result<String, Box<dyn std::error::Error>> {
+        tx: Sender<Result<T, Status>>,
+    ) -> Result<(), Box<dyn std::error::Error>>
+    where
+        T: std::convert::From<String> + 'static,
+    {
         // Load the chat given the uuid
         let handle = self.chats.clone();
         let mut lock = handle.lock().await;
@@ -131,12 +129,21 @@ impl Handler<String> {
             return Err("Unable to get the lock".into());
         };
 
-        channel.tx.send(msg.to_owned()).await?;
-
-        let Some(msg) = channel.rx.recv().await else {
-            return Err("Unable to get message from channel".into());
+        if let Err(err) = channel.tx.send(msg.to_string()).await {
+            tx.send(Err(Status::internal(err.to_string()))).await?;
+            tx.closed().await;
         };
 
-        Ok(msg)
+        while let Some(tokens) = channel.rx.recv().await {
+            match tokens.as_str() {
+                // Close the channel sender when the end word identifier has been sent
+                "<<end>>" => {
+                    return Ok(());
+                }
+                _ => tx.send(Ok(T::from(tokens))).await?,
+            };
+        }
+
+        Ok(())
     }
 }

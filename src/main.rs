@@ -10,7 +10,7 @@ mod server;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let mut chat_handler = Handler::new()?;
+    let mut chat_handler = Handler::new().await?;
     chat_handler.load().await?;
     println!("Loading existing chat is finished");
 

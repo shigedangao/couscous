@@ -3,7 +3,7 @@ package couscous;
 
 service Couscous {
     rpc NewChannel(NewChannelRequest) returns (Chat);
-    rpc Discuss(MessageRequest) returns (MessageResponse);
+    rpc Discuss(MessageRequest) returns (stream MessageResponse);
 }
 
 message NewChannelRequest {}
