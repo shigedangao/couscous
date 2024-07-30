@@ -787,7 +787,9 @@ dependencies = [
 name = "couscous"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
  "async-stream",
+ "async-trait",
  "kalosm",
  "prost",
  "serde",

@@ -5,13 +5,13 @@ use tokio::sync::mpsc::{self, Receiver, Sender};
 pub(crate) fn create_session(
     uid: String,
     existing_session: Option<PathBuf>,
+    model: Llama,
 ) -> (Sender<String>, Receiver<String>, String) {
     let (tx_client, mut rx_client) = mpsc::channel::<String>(1000);
     let (tx_chat, rx_chat) = mpsc::channel(1000);
     let path = PathBuf::from(format!("./{}.llama", uid));
 
     tokio::spawn(async move {
-        let model = Llama::new_chat().await.unwrap();
         let owned_chat_tx = tx_chat.clone();
         let mut chat =
             Chat::builder(model).with_system_prompt("The assistant will act like a pirate");

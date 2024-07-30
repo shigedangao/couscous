@@ -42,4 +42,4 @@ As the library allows to load the history. All chat will be saved and restored w
 
 ## Issue
 
-An issue that I've founded is that I have to create a model for each chat. Maybe finding a way to reuse an existing model would be better as this add 4GB of model instance to the memory...
+Checking why the model isn't loaded into the GPU memory
