@@ -11,7 +11,8 @@ mod server;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let mut chat_handler: Handler<String> = Handler::new(driver::SupportedDriver::Kalosm).await?;
+    let mut chat_handler: Handler<String> =
+        Handler::new(driver::driver::SupportedDriver::Kalosm).await?;
     chat_handler.load().await?;
     println!("Loading existing chat is finished");
 

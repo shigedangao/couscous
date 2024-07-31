@@ -1,3 +1,4 @@
+use super::DriverOperator;
 use super::*;
 use ::kalosm::language::Llama;
 use async_trait::async_trait;
@@ -15,7 +16,7 @@ pub struct Kalosm {
 }
 
 #[async_trait]
-impl Driver for Kalosm {
+impl DriverOperator for Kalosm {
     async fn set_model(&mut self) -> Result<(), DriverError> {
         let model = Llama::new_chat()
             .await

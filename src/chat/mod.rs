@@ -1,4 +1,4 @@
-use crate::driver::{Channel, Chats, DriversList, SupportedDriver};
+use crate::driver::{driver::Driver, driver::SupportedDriver, Channel, Chats};
 use anyhow::{anyhow, Result};
 use std::collections::HashMap;
 use std::path::PathBuf;
@@ -18,12 +18,12 @@ where
     chats: Arc<Mutex<HashMap<String, Channel<T>>>>,
     stored_chats: Arc<Mutex<Chats>>,
     stored_chats_path: PathBuf,
-    driver: DriversList,
+    driver: Driver,
 }
 
 impl Handler<String> {
     pub async fn new(supported_driver: SupportedDriver) -> Result<Self> {
-        let mut driver = DriversList::default();
+        let mut driver = Driver::default();
         driver.load_driver(supported_driver).await?;
 
         Ok(Self {
