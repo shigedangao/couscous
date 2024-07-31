@@ -14,7 +14,7 @@ pub(crate) fn create_session(
     tokio::spawn(async move {
         let owned_chat_tx = tx_chat.clone();
         let mut chat =
-            Chat::builder(model).with_system_prompt("The assistant will act like a pirate");
+            Chat::builder(model).with_system_prompt("L'assistant va parler comme un bon Français");
 
         if let Some(session_path) = existing_session {
             chat = chat.with_try_session_path(session_path);

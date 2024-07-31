@@ -1,8 +1,20 @@
 # Couscous 🍽️
 
-Just a small toy gRPC service to interact with LLama or any other AI Model exposed through the [kalosm library](https://github.com/floneum/floneum/tree/main/interfaces/kalosm). For the time being only llama_7b_chat is set to play with this.
+Just a small toy gRPC service to interact with LLama or any other AI Model exposed through the [kalosm library](https://github.com/floneum/floneum/tree/main/interfaces/kalosm) or through [ollama](https://github.com/ollama/ollama?tab=readme-ov-file) by using the binding provided by [ollama-rs](https://github.com/pepperoni21/ollama-rs)
 
 The cargo.toml specified metal for osx performance improvement.
+
+## Run
+
+By default couscous will uses Kalosm to run the Llama model. If you wish to use ollama please run the project by running the following command
+
+```sh
+cargo run --features ollama
+```
+
+### Note on Ollama
+
+In order to use ollama, please download ollama and download the model llama3.1
 
 # What can we do ?
 
@@ -40,6 +52,5 @@ The response would be
 
 As the library allows to load the history. All chat will be saved and restored when relaunching the couscous binary.
 
-## Issue
-
-Checking why the model isn't loaded into the GPU memory
+> [!NOTE]
+> If you decide to switch from Kalosm to Ollama or the other way. You'll need to remove the cache. You can do that by deleting the file chats.json

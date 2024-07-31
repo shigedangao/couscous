@@ -4,11 +4,18 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-kalosm = { git = "https://github.com/floneum/floneum", branch = "main", features = ["language", "metal"], default-features = false }
+kalosm = { git = "https://github.com/floneum/floneum", branch = "main", features = [
+    "language",
+    "metal",
+], default-features = false }
 tokio = { version = "1.38.1", features = ["full"] }
 tonic = "0.12"
 prost = "0.13"
-uuid = { version = "1.10.0", features = ["v4", "fast-rng", "macro-diagnostics"] }
+uuid = { version = "1.10.0", features = [
+    "v4",
+    "fast-rng",
+    "macro-diagnostics",
+] }
 tonic-reflection = "0.12.1"
 serde = { version = "1.0.204", features = ["derive"] }
 serde_json = "1.0.120"
@@ -16,6 +23,13 @@ async-stream = "0.3.5"
 tokio-stream = "0.1.15"
 anyhow = "1.0.86"
 async-trait = "0.1.81"
+ollama-rs = { git = "https://github.com/izyuumi/ollama-rs", branch = "master", features = [
+    "chat-history",
+    "stream",
+], optional = true }
 
 [build-dependencies]
 tonic-build = "0.12"
+
+[features]
+ollama = ["dep:ollama-rs"]
