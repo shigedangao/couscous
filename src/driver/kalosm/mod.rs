@@ -1,11 +1,10 @@
 use super::DriverOperator;
 use super::*;
+use crate::chat::history::ChatsHistory;
 use ::kalosm::language::Llama;
 use async_trait::async_trait;
 use std::collections::HashMap;
-use std::io::ErrorKind;
 use std::path::PathBuf;
-use tokio::task::JoinSet;
 use uuid::Uuid;
 
 mod session;
@@ -41,44 +40,22 @@ impl DriverOperator for Kalosm {
         ))
     }
 
-    async fn load_history(
-        &self,
-        path: &PathBuf,
-    ) -> Result<HashMap<String, Channel<String>>, DriverError> {
-        let content = match tokio::fs::read(&path).await {
-            Ok(content) => content,
-            Err(err) => {
-                if err.kind() == ErrorKind::NotFound {
-                    return Ok(HashMap::new());
-                }
-
-                return Err(DriverError::LoadHistory(err.to_string()));
-            }
-        };
-
-        let chats: Chats = serde_json::from_slice(&content)
+    async fn load_history(&self) -> Result<HashMap<String, Channel<String>>, DriverError> {
+        let chats = ChatsHistory::read_contents()
+            .await
             .map_err(|err| DriverError::Deserialize(err.to_string()))?;
 
         let model = self.model.as_ref().unwrap();
-        let mut set = JoinSet::new();
+        let mut cons = HashMap::new();
         for uid in chats.uids {
             let model = model.clone();
             let path = PathBuf::from(format!("./{}.llama", uid));
 
-            set.spawn(async move {
-                let (tx, rx, uid) = session::create_session(uid, Some(path), model);
+            let (tx, rx, uid) = session::create_session(uid, Some(path), model);
 
-                (tx, rx, uid)
-            });
+            cons.insert(uid, Channel { tx, rx });
         }
 
-        let mut chats = HashMap::new();
-        while let Some(res) = set.join_next().await {
-            let (tx, rx, uid) = res.map_err(|err| DriverError::Session(err.to_string()))?;
-
-            chats.insert(uid, Channel { tx, rx });
-        }
-
-        Ok(chats)
+        Ok(cons)
     }
 }

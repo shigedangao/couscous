@@ -1,11 +1,14 @@
-use crate::driver::{driver::Driver, driver::SupportedDriver, Channel, Chats};
+use crate::driver::{driver::Driver, driver::SupportedDriver, Channel};
 use anyhow::{anyhow, Result};
+use history::ChatsHistory;
 use std::collections::HashMap;
 use std::path::PathBuf;
 use std::sync::Arc;
 use tokio::sync::mpsc::Sender;
 use tokio::sync::Mutex;
 use tonic::Status;
+
+pub mod history;
 
 // Constant
 const STORED_UID_PATH: &str = "chats";
@@ -16,7 +19,7 @@ where
     T: AsRef<str>,
 {
     chats: Arc<Mutex<HashMap<String, Channel<T>>>>,
-    stored_chats: Arc<Mutex<Chats>>,
+    stored_chats: Arc<Mutex<ChatsHistory>>,
     stored_chats_path: PathBuf,
     driver: Driver,
 }
@@ -36,7 +39,7 @@ impl Handler<String> {
     pub async fn load(&mut self) -> Result<(), Box<dyn std::error::Error>> {
         println!("Loading the existing chat");
         let driver = self.driver.get_driver();
-        let chats = driver.load_history(&self.stored_chats_path).await?;
+        let chats = driver.load_history().await?;
 
         self.chats = Arc::new(Mutex::new(chats));
 
