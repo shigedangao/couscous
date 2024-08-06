@@ -31,15 +31,17 @@ impl Couscous for Rpc {
         &self,
         request: Request<MessageRequest>,
     ) -> Result<Response<Self::DiscussStream>, Status> {
-        let (tx, rx) = mpsc::channel(4);
+        let (tx, rx) = mpsc::channel(1000);
         let handler = self.chat.clone();
         let params = request.into_inner();
 
         tokio::spawn(async move {
-            handler
+            if let Err(err) = handler
                 .send_message(&params.chat_id, &params.message, tx)
                 .await
-                .unwrap();
+            {
+                println!("Unable to send message due to error {}", err)
+            };
         });
 
         Ok(Response::new(ReceiverStream::new(rx)))

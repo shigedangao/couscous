@@ -12,10 +12,10 @@ mod server;
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     #[cfg(feature = "ollama")]
-    let driver = driver::driver::SupportedDriver::Ollama;
+    let driver = driver::ops::SupportedDriver::Ollama;
 
     #[cfg(not(feature = "ollama"))]
-    let driver = driver::driver::SupportedDriver::Kalosm;
+    let driver = driver::ops::SupportedDriver::Kalosm;
 
     let mut chat_handler: Handler<String> = Handler::new(driver).await?;
     chat_handler.load().await?;

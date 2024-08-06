@@ -31,7 +31,7 @@ pub(crate) fn handle_session(
                 Ok(res) => res,
                 Err(err) => {
                     if let Err(err) = owned_tx_chat.send(err.to_string()).await {
-                        println!("Error while sending error message {}", err.to_string());
+                        println!("Error while sending error message {}", err);
                     };
 
                     return;
@@ -41,16 +41,13 @@ pub(crate) fn handle_session(
             while let Some(Ok(msg)) = stream.next().await {
                 if let Some(chat) = msg.message {
                     if let Err(err) = owned_tx_chat.send(chat.content).await {
-                        println!("Unable to send message due to error {}", err.to_string());
+                        println!("Unable to send message due to error {}", err);
                     };
                 }
 
                 if msg.done {
                     if let Err(err) = owned_tx_chat.send("<<end>>".to_string()).await {
-                        println!(
-                            "Unable to send closing message due to error {}",
-                            err.to_string()
-                        );
+                        println!("Unable to send closing message due to error {}", err);
                     };
                 }
             }

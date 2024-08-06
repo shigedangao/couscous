@@ -27,16 +27,16 @@ pub(crate) fn create_session(
 
             while let Some(tokens) = stream.next().await {
                 if let Err(err) = owned_chat_tx.send(tokens).await {
-                    println!("Error while sending data {}", err.to_string());
+                    println!("Error while sending data {}", err);
                 }
             }
 
             if let Err(err) = chat_handler.save_session(&path).await {
-                println!("Unable to save the chat locally {}", err.to_string());
+                println!("Unable to save the chat locally {}", err);
             };
 
             if let Err(err) = owned_chat_tx.send("<<end>>".to_string()).await {
-                println!("Error while sending closed message {}", err.to_string());
+                println!("Error while sending closed message {}", err);
             };
         }
     });

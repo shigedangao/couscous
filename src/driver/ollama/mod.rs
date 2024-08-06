@@ -9,6 +9,7 @@ mod session;
 
 // Constant
 const LLAMA_MODEL: &str = "llama3.1:latest";
+const HISTORY: u16 = 100;
 
 #[derive(Clone, Default)]
 pub struct Ollama {
@@ -18,7 +19,7 @@ pub struct Ollama {
 #[async_trait]
 impl DriverOperator for Ollama {
     async fn set_model(&mut self) -> Result<(), DriverError> {
-        let model = OllamaHandler::new_default_with_history(10);
+        let model = OllamaHandler::new_default_with_history(HISTORY);
 
         self.model = model;
 

@@ -28,7 +28,12 @@ impl DriverOperator for Kalosm {
 
     async fn new_chat(&self) -> Result<(Channel<String>, String), DriverError> {
         let uid = Uuid::new_v4().to_string();
-        let model = self.model.as_ref().unwrap();
+        let Some(model) = self.model.as_ref() else {
+            return Err(DriverError::ModelLoad(
+                "Unable to load the llama model".to_string(),
+            ));
+        };
+
         let (tx_client, rx_chat, _) = session::create_session(uid.clone(), None, model.clone());
 
         Ok((

@@ -1,4 +1,4 @@
-use crate::driver::{driver::Driver, driver::SupportedDriver, Channel};
+use crate::driver::{ops::Driver, ops::SupportedDriver, Channel};
 use anyhow::{anyhow, Result};
 use history::ChatsHistory;
 use std::collections::HashMap;

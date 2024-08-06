@@ -3,10 +3,10 @@ use std::collections::HashMap;
 use std::error::Error;
 use tokio::sync::mpsc::{Receiver, Sender};
 
-pub mod driver;
 pub mod kalosm;
 #[cfg(feature = "ollama")]
 pub mod ollama;
+pub mod ops;
 
 pub struct Channel<T>
 where
