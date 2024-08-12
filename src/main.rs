@@ -7,6 +7,7 @@ use tonic::transport::Server;
 
 mod chat;
 mod driver;
+mod env;
 mod server;
 
 #[tokio::main]
@@ -17,7 +18,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     #[cfg(not(feature = "ollama"))]
     let driver = driver::ops::SupportedDriver::Kalosm;
 
-    let mut chat_handler: Handler<String> = Handler::new(driver).await?;
+    // Read environment variables
+    let env_var = env::load_env_variables();
+
+    let mut chat_handler: Handler<String> = Handler::new(driver, env_var).await?;
     chat_handler.load().await?;
     println!("Loading existing chat is finished");
 

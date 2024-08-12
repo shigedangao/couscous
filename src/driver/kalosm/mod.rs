@@ -1,6 +1,7 @@
 use super::DriverOperator;
 use super::*;
 use crate::chat::history::ChatsHistory;
+use crate::env::Variables;
 use ::kalosm::language::Llama;
 use async_trait::async_trait;
 use std::collections::HashMap;
@@ -16,7 +17,7 @@ pub struct Kalosm {
 
 #[async_trait]
 impl DriverOperator for Kalosm {
-    async fn set_model(&mut self) -> Result<(), DriverError> {
+    async fn set_model(&mut self, _: Option<Variables>) -> Result<(), DriverError> {
         let model = Llama::new_chat()
             .await
             .map_err(|err| DriverError::ModelLoad(err.to_string()))?;

@@ -1,3 +1,4 @@
+use crate::env::Variables;
 use async_trait::async_trait;
 use std::collections::HashMap;
 use std::error::Error;
@@ -35,10 +36,10 @@ impl std::fmt::Display for DriverError {
 
 #[async_trait]
 pub trait DriverOperator: Send {
-    /// Create a new driver
-    async fn set_model(&mut self) -> Result<(), DriverError>;
     // Create a new chat and return an uid representing the id of the chat
     async fn new_chat(&self) -> Result<(Channel<String>, String), DriverError>;
+    /// Create a new driver
+    async fn set_model(&mut self, env: Option<Variables>) -> Result<(), DriverError>;
     /// Load the history of the conversation
     async fn load_history(&self) -> Result<HashMap<String, Channel<String>>, DriverError>;
 }

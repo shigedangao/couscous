@@ -2,6 +2,7 @@ use super::kalosm::Kalosm;
 #[cfg(feature = "ollama")]
 use super::ollama::Ollama;
 use super::{DriverError, DriverOperator};
+use crate::env::Variables;
 
 #[derive(Debug, Clone)]
 pub enum SupportedDriver {
@@ -25,13 +26,17 @@ pub struct Driver {
 }
 
 impl Driver {
-    pub async fn load_driver(&mut self, s: SupportedDriver) -> Result<(), DriverError> {
+    pub async fn load_driver(
+        &mut self,
+        s: SupportedDriver,
+        env: Option<Variables>,
+    ) -> Result<(), DriverError> {
         self.supported_driver = s.clone();
 
         match s {
-            SupportedDriver::Kalosm => self.kalosm.set_model().await?,
+            SupportedDriver::Kalosm => self.kalosm.set_model(env).await?,
             #[cfg(feature = "ollama")]
-            SupportedDriver::Ollama => self.ollama.set_model().await?,
+            SupportedDriver::Ollama => self.ollama.set_model(env).await?,
         }
 
         Ok(())

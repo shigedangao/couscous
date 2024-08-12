@@ -27,6 +27,7 @@ ollama-rs = { git = "https://github.com/izyuumi/ollama-rs", branch = "master", f
     "chat-history",
     "stream",
 ], optional = true }
+dotenvy = "0.15.7"
 
 [build-dependencies]
 tonic-build = "0.12"

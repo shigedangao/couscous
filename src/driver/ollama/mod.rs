@@ -1,5 +1,6 @@
 use super::{Channel, DriverError, DriverOperator};
 use crate::chat::history::ChatsHistory;
+use crate::env::Variables;
 use ::async_trait::async_trait;
 use ::ollama_rs::Ollama as OllamaHandler;
 use ::uuid::Uuid;
@@ -18,8 +19,17 @@ pub struct Ollama {
 
 #[async_trait]
 impl DriverOperator for Ollama {
-    async fn set_model(&mut self) -> Result<(), DriverError> {
-        let model = OllamaHandler::new_default_with_history(HISTORY);
+    async fn set_model(&mut self, env: Option<Variables>) -> Result<(), DriverError> {
+        let model = match env {
+            Some(var) => OllamaHandler::new_with_history_async(
+                var.ollama_host,
+                var.ollama_port
+                    .parse::<u16>()
+                    .expect("Expect port to be a u16"),
+                HISTORY,
+            ),
+            None => OllamaHandler::new_default_with_history(HISTORY),
+        };
 
         self.model = model;
 

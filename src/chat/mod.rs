@@ -1,4 +1,5 @@
 use crate::driver::{ops::Driver, ops::SupportedDriver, Channel};
+use crate::env::Variables;
 use anyhow::{anyhow, Result};
 use history::ChatsHistory;
 use std::collections::HashMap;
@@ -25,9 +26,9 @@ where
 }
 
 impl Handler<String> {
-    pub async fn new(supported_driver: SupportedDriver) -> Result<Self> {
+    pub async fn new(supported_driver: SupportedDriver, env: Option<Variables>) -> Result<Self> {
         let mut driver = Driver::default();
-        driver.load_driver(supported_driver).await?;
+        driver.load_driver(supported_driver, env).await?;
 
         Ok(Self {
             driver,
