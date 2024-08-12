@@ -21,12 +21,16 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Read environment variables
     let env_var = env::load_env_variables();
 
-    let mut chat_handler: Handler<String> = Handler::new(driver, env_var).await?;
+    let mut chat_handler: Handler<String> = Handler::new(driver, env_var.clone()).await?;
     chat_handler.load().await?;
     println!("Loading existing chat is finished");
 
     // Initialize the server
-    let addr = "127.0.0.1:50051".parse()?;
+    let addr = match env_var {
+        Some(env) => env.grpc_address.parse()?,
+        None => "127.0.0.1:50051".parse()?,
+    };
+
     let srv = Rpc {
         chat: Arc::new(chat_handler),
     };
