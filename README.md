@@ -20,7 +20,7 @@ You can set environment varialbles through an .env file. Below is a configuratio
 OLLAMA_HOST="https://{pod-id}-11434.proxy.runpod.net/"
 OLLAMA_PORT="443"
 GRPC_SERVER_ADDRESS="127.0.0.1:50051"
-``
+```
 
 ### Note on Ollama
 
