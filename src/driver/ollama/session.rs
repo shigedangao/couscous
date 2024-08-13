@@ -1,3 +1,4 @@
+use crate::driver::CHAT_END_SIGNAL;
 use ollama_rs::{
     generation::chat::{request::ChatMessageRequest, ChatMessage, ChatMessageResponseStream},
     Ollama as OllamaHandler,
@@ -30,15 +31,28 @@ pub(crate) fn handle_session(
             let mut stream: ChatMessageResponseStream = match stream_res {
                 Ok(res) => res,
                 Err(err) => {
-                    if let Err(err) = owned_tx_chat.send(err.to_string()).await {
+                    if let Err(err) = owned_tx_chat.send(CHAT_END_SIGNAL.to_string()).await {
                         println!("Error while sending error message {}", err);
                     };
+
+                    println!("Unable to continue to parse message due to error {err}");
 
                     return;
                 }
             };
 
-            while let Some(Ok(msg)) = stream.next().await {
+            while let Some(msg) = stream.next().await {
+                let msg = match msg {
+                    Ok(msg) => msg,
+                    Err(_) => {
+                        if let Err(err) = owned_tx_chat.send(CHAT_END_SIGNAL.to_owned()).await {
+                            println!("Unable to send message due to error {}", err);
+                        }
+
+                        continue;
+                    }
+                };
+
                 if let Some(chat) = msg.message {
                     if let Err(err) = owned_tx_chat.send(chat.content).await {
                         println!("Unable to send message due to error {}", err);
@@ -46,7 +60,7 @@ pub(crate) fn handle_session(
                 }
 
                 if msg.done {
-                    if let Err(err) = owned_tx_chat.send("<<end>>".to_string()).await {
+                    if let Err(err) = owned_tx_chat.send(CHAT_END_SIGNAL.to_string()).await {
                         println!("Unable to send closing message due to error {}", err);
                     };
                 }

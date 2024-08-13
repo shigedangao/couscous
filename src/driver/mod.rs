@@ -9,6 +9,9 @@ pub mod kalosm;
 pub mod ollama;
 pub mod ops;
 
+// Constant
+pub const CHAT_END_SIGNAL: &str = "<<end>>";
+
 pub struct Channel<T>
 where
     T: AsRef<str>,

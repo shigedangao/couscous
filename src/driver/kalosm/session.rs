@@ -1,3 +1,4 @@
+use super::CHAT_END_SIGNAL;
 use kalosm::language::*;
 use std::path::PathBuf;
 use tokio::sync::mpsc::{self, Receiver, Sender};
@@ -35,7 +36,7 @@ pub(crate) fn create_session(
                 println!("Unable to save the chat locally {}", err);
             };
 
-            if let Err(err) = owned_chat_tx.send("<<end>>".to_string()).await {
+            if let Err(err) = owned_chat_tx.send(CHAT_END_SIGNAL.to_string()).await {
                 println!("Error while sending closed message {}", err);
             };
         }

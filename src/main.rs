@@ -26,9 +26,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("Loading existing chat is finished");
 
     // Initialize the server
+    let default_addr = "127.0.0.1:50051".parse()?;
     let addr = match env_var {
-        Some(env) => env.grpc_address.parse()?,
-        None => "127.0.0.1:50051".parse()?,
+        Some(env) => env.grpc_address.parse().unwrap_or(default_addr),
+        None => default_addr,
     };
 
     let srv = Rpc {

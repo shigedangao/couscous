@@ -12,6 +12,16 @@ By default couscous will uses Kalosm to run the Llama model. If you wish to use 
 cargo run --features ollama
 ```
 
+## Environment variables
+
+You can set environment varialbles through an .env file. Below is a configuration example (external model is only support for Ollama)
+
+```sh
+OLLAMA_HOST="https://{pod-id}-11434.proxy.runpod.net/"
+OLLAMA_PORT="443"
+GRPC_SERVER_ADDRESS="127.0.0.1:50051"
+``
+
 ### Note on Ollama
 
 In order to use ollama, please download ollama and download the model llama3.1

@@ -1,4 +1,4 @@
-use crate::driver::{ops::Driver, ops::SupportedDriver, Channel};
+use crate::driver::{ops::Driver, ops::SupportedDriver, Channel, CHAT_END_SIGNAL};
 use crate::env::Variables;
 use anyhow::{anyhow, Result};
 use history::ChatsHistory;
@@ -92,7 +92,7 @@ impl Handler<String> {
         while let Some(tokens) = channel.rx.recv().await {
             match tokens.as_str() {
                 // Close the channel sender when the end word identifier has been sent
-                "<<end>>" => {
+                CHAT_END_SIGNAL => {
                     return Ok(());
                 }
                 _ => tx
