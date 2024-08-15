@@ -35,7 +35,8 @@ impl DriverOperator for Kalosm {
             ));
         };
 
-        let (tx_client, rx_chat, _) = session::create_session(uid.clone(), None, model.clone());
+        let path = PathBuf::from(format!("./{}.llama", uid));
+        let (tx_client, rx_chat, _) = session::create_session(uid.clone(), path, model.clone());
 
         Ok((
             Channel {
@@ -57,7 +58,7 @@ impl DriverOperator for Kalosm {
             let model = model.clone();
             let path = PathBuf::from(format!("./{}.llama", uid));
 
-            let (tx, rx, uid) = session::create_session(uid, Some(path), model);
+            let (tx, rx, uid) = session::create_session(uid, path, model);
 
             cons.insert(uid, Channel { tx, rx });
         }

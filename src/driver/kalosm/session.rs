@@ -1,27 +1,23 @@
-use super::CHAT_END_SIGNAL;
+use super::{CHAT_END_SIGNAL, DEFAULT_CHANNEL_BUFFER};
 use kalosm::language::*;
 use std::path::PathBuf;
 use tokio::sync::mpsc::{self, Receiver, Sender};
 
 pub(crate) fn create_session(
     uid: String,
-    existing_session: Option<PathBuf>,
+    existing_session: PathBuf,
     model: Llama,
 ) -> (Sender<String>, Receiver<String>, String) {
-    let (tx_client, mut rx_client) = mpsc::channel::<String>(1000);
-    let (tx_chat, rx_chat) = mpsc::channel(1000);
+    let (tx_client, mut rx_client) = mpsc::channel::<String>(DEFAULT_CHANNEL_BUFFER);
+    let (tx_chat, rx_chat) = mpsc::channel(DEFAULT_CHANNEL_BUFFER);
     let path = PathBuf::from(format!("./{}.llama", uid));
 
     tokio::spawn(async move {
         let owned_chat_tx = tx_chat.clone();
-        let mut chat =
-            Chat::builder(model).with_system_prompt("L'assistant va parler comme un bon Français");
-
-        if let Some(session_path) = existing_session {
-            chat = chat.with_try_session_path(session_path);
-        }
-
-        let mut chat_handler = chat.build();
+        let mut chat_handler = Chat::builder(model)
+            .with_system_prompt("L'assistant va parler comme un bon Français")
+            .with_try_session_path(existing_session)
+            .build();
 
         while let Some(msg) = rx_client.recv().await {
             let mut stream = chat_handler.add_message(&msg);

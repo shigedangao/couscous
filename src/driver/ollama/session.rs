@@ -1,4 +1,4 @@
-use crate::driver::CHAT_END_SIGNAL;
+use crate::driver::{CHAT_END_SIGNAL, DEFAULT_CHANNEL_BUFFER};
 use ollama_rs::{
     generation::chat::{request::ChatMessageRequest, ChatMessage, ChatMessageResponseStream},
     Ollama as OllamaHandler,
@@ -11,8 +11,8 @@ pub(crate) fn handle_session(
     model: OllamaHandler,
     model_name: String,
 ) -> (Sender<String>, Receiver<String>) {
-    let (tx_client, mut rx_client) = mpsc::channel::<String>(1000);
-    let (tx_chat, rx_chat) = mpsc::channel(1000);
+    let (tx_client, mut rx_client) = mpsc::channel::<String>(DEFAULT_CHANNEL_BUFFER);
+    let (tx_chat, rx_chat) = mpsc::channel(DEFAULT_CHANNEL_BUFFER);
 
     let mut model = model.clone();
     tokio::spawn(async move {

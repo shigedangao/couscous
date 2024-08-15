@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-kalosm = { git = "https://github.com/floneum/floneum", branch = "main", features = [
+kalosm = { version = "0.3.2", features = [
     "language",
     "metal",
 ], default-features = false }

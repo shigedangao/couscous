@@ -11,6 +11,7 @@ pub mod ops;
 
 // Constant
 pub const CHAT_END_SIGNAL: &str = "<<end>>";
+const DEFAULT_CHANNEL_BUFFER: usize = 1000;
 
 pub struct Channel<T>
 where
