@@ -1,0 +1,13 @@
+version: v2
+inputs:
+  - directory: ../proto
+plugins:
+  - local: protoc-gen-es
+    opt: target=ts
+    out: src/pb
+  - remote: buf.build/connectrpc/es:v1.4.0
+    opt: target=ts
+    out: src/pb
+  # dependencies
+  - remote: buf.build/bufbuild/es:v1.7.2
+    out: src/pb

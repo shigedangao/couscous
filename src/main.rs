@@ -3,12 +3,24 @@ use server::include::couscous::couscous_server::CouscousServer;
 use server::include::couscous::FILE_DESCRIPTOR_SET;
 use server::Rpc;
 use std::sync::Arc;
+use std::sync::LazyLock;
 use tonic::transport::Server;
+use tonic_web::GrpcWebLayer;
+use tower_http::cors::Any;
+use tower_http::cors::{AllowHeaders, AllowMethods, AllowOrigin, CorsLayer};
 
 mod chat;
 mod driver;
 mod env;
 mod server;
+
+static GRPC_WEB_CORS: LazyLock<CorsLayer> = LazyLock::new(|| {
+    CorsLayer::new()
+        .allow_origin(AllowOrigin::any())
+        .allow_headers(AllowHeaders::any())
+        .allow_methods(AllowMethods::any())
+        .expose_headers(Any)
+});
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -41,6 +53,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .build()?;
 
     Server::builder()
+        .accept_http1(true)
+        .layer(GRPC_WEB_CORS.clone())
+        .layer(GrpcWebLayer::new())
         .add_service(reflection_service)
         .add_service(CouscousServer::new(srv))
         .serve(addr)
