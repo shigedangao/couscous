@@ -64,3 +64,14 @@ As the library allows to load the history. All chat will be saved and restored w
 
 > [!NOTE]
 > If you decide to switch from Kalosm to Ollama or the other way. You'll need to remove the cache. You can do that by deleting the file chats.json
+
+## UI
+
+A minimal ui is available if you want to interact through your browser instead of using postman or grpcurl. You can run the UI by going to the `ui` folder and run the command
+
+```sh
+npm run dev
+```
+
+> [!WARNING]
+> You must run the server first as it'll create a new channel automatically
