@@ -23,13 +23,24 @@ async-stream = "0.3.5"
 tokio-stream = "0.1.15"
 anyhow = "1.0.86"
 async-trait = "0.1.81"
-ollama-rs = { git = "https://github.com/izyuumi/ollama-rs", branch = "master", features = [
+ollama-rs = { git = "https://github.com/pepperoni21/ollama-rs", branch = "master", features = [
     "chat-history",
     "stream",
 ], optional = true }
 dotenvy = "0.15.7"
 tonic-web = "0.12.1"
 tower-http = { version = "0.5.2", features = ["cors"] }
+
+[target.'cfg(target_os = "macos")'.dependencies]
+kalosm = { version = "0.3.2", features = [
+    "language",
+    "metal",
+], default-features = false }
+
+[target.'cfg(not(target_os = "macos"))'.dependencies]
+kalosm = { version = "0.3.2", features = [
+    "language",
+], default-features = false }
 
 [build-dependencies]
 tonic-build = "0.12"

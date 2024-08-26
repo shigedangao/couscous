@@ -21,7 +21,7 @@ pub struct Ollama {
 impl DriverOperator for Ollama {
     async fn set_model(&mut self, env: Option<Variables>) -> Result<(), DriverError> {
         let model = match env {
-            Some(var) => OllamaHandler::new_with_history_async(
+            Some(var) => OllamaHandler::new_with_history(
                 var.ollama_host,
                 var.ollama_port
                     .parse::<u16>()

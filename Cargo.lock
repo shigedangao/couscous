@@ -3142,7 +3142,7 @@ dependencies = [
 [[package]]
 name = "ollama-rs"
 version = "0.2.0"
-source = "git+https://github.com/izyuumi/ollama-rs?branch=master#5b9fef468efbd5657dca09191c93fc0dcc3a6123"
+source = "git+https://github.com/pepperoni21/ollama-rs?branch=master#1900774b2472814baf7c7f44a3fce41f2cd6b4e0"
 dependencies = [
  "async-stream",
  "async-trait",
