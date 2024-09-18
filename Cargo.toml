@@ -23,7 +23,7 @@ async-stream = "0.3.5"
 tokio-stream = "0.1.15"
 anyhow = "1.0.86"
 async-trait = "0.1.81"
-ollama-rs = { git = "https://github.com/shigedangao/ollama-rs.git", branch = "master", features = [
+ollama-rs = { version = "0.2.1", features = [
     "chat-history",
     "stream",
 ], optional = true }
