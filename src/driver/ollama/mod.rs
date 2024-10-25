@@ -10,7 +10,6 @@ mod session;
 
 // Constant
 const LLAMA_MODEL: &str = "llama3.1:latest";
-const HISTORY: u16 = 100;
 
 #[derive(Clone, Default)]
 pub struct Ollama {
@@ -21,14 +20,13 @@ pub struct Ollama {
 impl DriverOperator for Ollama {
     async fn set_model(&mut self, env: Option<Variables>) -> Result<(), DriverError> {
         let model = match env {
-            Some(var) => OllamaHandler::new_with_history(
+            Some(var) => OllamaHandler::new(
                 var.ollama_host,
                 var.ollama_port
                     .parse::<u16>()
                     .expect("Expect port to be a u16"),
-                HISTORY,
             ),
-            None => OllamaHandler::new_default_with_history(HISTORY),
+            None => OllamaHandler::new("127.0.0.1".to_string(), 11434),
         };
 
         self.model = model;

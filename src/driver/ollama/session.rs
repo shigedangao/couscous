@@ -7,25 +7,22 @@ use tokio::sync::mpsc::{self, Receiver, Sender};
 use tokio_stream::StreamExt;
 
 pub(crate) fn handle_session(
-    uid: String,
+    _: String,
     model: OllamaHandler,
     model_name: String,
 ) -> (Sender<String>, Receiver<String>) {
     let (tx_client, mut rx_client) = mpsc::channel::<String>(DEFAULT_CHANNEL_BUFFER);
     let (tx_chat, rx_chat) = mpsc::channel(DEFAULT_CHANNEL_BUFFER);
 
-    let mut model = model.clone();
+    let model = model.clone();
     tokio::spawn(async move {
         let owned_tx_chat = tx_chat.clone();
         while let Some(msg) = rx_client.recv().await {
             let stream_res = model
-                .send_chat_messages_with_history_stream(
-                    ChatMessageRequest::new(
-                        model_name.clone(),
-                        vec![ChatMessage::user(msg.clone())],
-                    ),
-                    uid.to_owned(),
-                )
+                .send_chat_messages_stream(ChatMessageRequest::new(
+                    model_name.clone(),
+                    vec![ChatMessage::user(msg.clone())],
+                ))
                 .await;
 
             let mut stream: ChatMessageResponseStream = match stream_res {

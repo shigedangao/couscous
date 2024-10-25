@@ -6,7 +6,6 @@ edition = "2021"
 [dependencies]
 kalosm = { version = "0.3.2", features = [
     "language",
-    "metal",
 ], default-features = false }
 tokio = { version = "1.38.1", features = ["full"] }
 tonic = "0.12"
@@ -24,7 +23,6 @@ tokio-stream = "0.1.15"
 anyhow = "1.0.86"
 async-trait = "0.1.81"
 ollama-rs = { version = "0.2.1", features = [
-    "chat-history",
     "stream",
 ], optional = true }
 dotenvy = "0.15.7"
@@ -47,3 +45,5 @@ tonic-build = "0.12"
 
 [features]
 ollama = ["dep:ollama-rs"]
+cuda = ["kalosm/cuda"]
+metal = ["kalosm/metal"]
