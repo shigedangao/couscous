@@ -22,9 +22,7 @@ async-stream = "0.3.5"
 tokio-stream = "0.1.15"
 anyhow = "1.0.86"
 async-trait = "0.1.81"
-ollama-rs = { version = "0.2.1", features = [
-    "stream",
-], optional = true }
+ollama-rs = { version = "0.2.1", features = ["stream"], optional = true }
 dotenvy = "0.15.7"
 tonic-web = "0.12.1"
 tower-http = { version = "0.5.2", features = ["cors"] }
@@ -47,3 +45,4 @@ tonic-build = "0.12"
 ollama = ["dep:ollama-rs"]
 cuda = ["kalosm/cuda"]
 metal = ["kalosm/metal"]
+mkl = ["kalosm/mkl"]

@@ -13,6 +13,7 @@ pub(crate) fn load_env_variables() -> Option<Variables> {
     }
 
     let mut var = Variables::default();
+
     for (key, value) in env::vars() {
         let key = key.to_lowercase();
 
