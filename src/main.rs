@@ -1,7 +1,7 @@
 use chat::Handler;
-use server::include::couscous::couscous_server::CouscousServer;
-use server::include::couscous::FILE_DESCRIPTOR_SET;
 use server::Rpc;
+use server::include::couscous::FILE_DESCRIPTOR_SET;
+use server::include::couscous::couscous_server::CouscousServer;
 use std::sync::Arc;
 use std::sync::LazyLock;
 use tonic::transport::Server;
@@ -38,11 +38,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("Loading existing chat is finished");
 
     // Initialize the server
-    let default_addr = "127.0.0.1:10001".parse()?;
-    let addr = match env_var {
-        Some(env) => env.grpc_address.parse().unwrap_or(default_addr),
-        None => default_addr,
-    };
+    let default_addr = "127.0.0.1:50051".parse()?;
+    let addr = env_var.grpc_address.parse().unwrap_or(default_addr);
 
     let srv = Rpc {
         chat: Arc::new(chat_handler),
@@ -50,7 +47,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let reflection_service = tonic_reflection::server::Builder::configure()
         .register_encoded_file_descriptor_set(FILE_DESCRIPTOR_SET)
-        .build()?;
+        .build_v1alpha()?;
 
     println!("Running server on {}", addr);
 

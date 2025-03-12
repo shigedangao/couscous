@@ -43,7 +43,7 @@ pub trait DriverOperator: Send {
     // Create a new chat and return an uid representing the id of the chat
     async fn new_chat(&self) -> Result<(Channel<String>, String), DriverError>;
     /// Create a new driver
-    async fn set_model(&mut self, env: Option<Variables>) -> Result<(), DriverError>;
+    async fn set_model(&mut self, env: Variables) -> Result<(), DriverError>;
     /// Load the history of the conversation
     async fn load_history(&self) -> Result<HashMap<String, Channel<String>>, DriverError>;
 }

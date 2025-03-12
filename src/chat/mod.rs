@@ -1,12 +1,12 @@
-use crate::driver::{ops::Driver, ops::SupportedDriver, Channel, CHAT_END_SIGNAL};
+use crate::driver::{CHAT_END_SIGNAL, Channel, ops::Driver, ops::SupportedDriver};
 use crate::env::Variables;
-use anyhow::{anyhow, Result};
+use anyhow::{Result, anyhow};
 use history::ChatsHistory;
 use std::collections::HashMap;
 use std::path::PathBuf;
 use std::sync::Arc;
-use tokio::sync::mpsc::Sender;
 use tokio::sync::Mutex;
+use tokio::sync::mpsc::Sender;
 use tonic::Status;
 
 pub mod history;
@@ -26,7 +26,7 @@ where
 }
 
 impl Handler<String> {
-    pub async fn new(supported_driver: SupportedDriver, env: Option<Variables>) -> Result<Self> {
+    pub async fn new(supported_driver: SupportedDriver, env: Variables) -> Result<Self> {
         let mut driver = Driver::default();
         driver.load_driver(supported_driver, env).await?;
 
