@@ -1,0 +1,16 @@
+name: ci
+
+on: [push]
+
+jobs:
+  tests:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Protoc
+        uses: arduino/setup-protoc@v3
+      - uses: dtolnay/rust-toolchain@stable
+      - name: install clippy
+        run: rustup component add clippy
+      - name: clippy
+        run: cargo clippy --all-features

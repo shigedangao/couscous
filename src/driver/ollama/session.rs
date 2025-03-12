@@ -1,13 +1,12 @@
 use crate::driver::{CHAT_END_SIGNAL, DEFAULT_CHANNEL_BUFFER};
 use ollama_rs::{
-    generation::chat::{request::ChatMessageRequest, ChatMessage, ChatMessageResponseStream},
     Ollama as OllamaHandler,
+    generation::chat::{ChatMessage, ChatMessageResponseStream, request::ChatMessageRequest},
 };
 use tokio::sync::mpsc::{self, Receiver, Sender};
 use tokio_stream::StreamExt;
 
 pub(crate) fn handle_session(
-    _: String,
     model: OllamaHandler,
     model_name: String,
 ) -> (Sender<String>, Receiver<String>) {
@@ -50,11 +49,9 @@ pub(crate) fn handle_session(
                     }
                 };
 
-                if let Some(chat) = msg.message {
-                    if let Err(err) = owned_tx_chat.send(chat.content).await {
-                        println!("Unable to send message due to error {}", err);
-                    };
-                }
+                if let Err(err) = owned_tx_chat.send(msg.message.content).await {
+                    println!("Unable to send message due to error {}", err);
+                };
 
                 if msg.done {
                     if let Err(err) = owned_tx_chat.send(CHAT_END_SIGNAL.to_string()).await {

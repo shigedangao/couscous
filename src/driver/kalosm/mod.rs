@@ -17,7 +17,7 @@ pub struct Kalosm {
 
 #[async_trait]
 impl DriverOperator for Kalosm {
-    async fn set_model(&mut self, _: Option<Variables>) -> Result<(), DriverError> {
+    async fn set_model(&mut self, _: Variables) -> Result<(), DriverError> {
         let model = Llama::new_chat()
             .await
             .map_err(|err| DriverError::ModelLoad(err.to_string()))?;

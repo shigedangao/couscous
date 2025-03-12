@@ -29,7 +29,7 @@ impl Driver {
     pub async fn load_driver(
         &mut self,
         s: SupportedDriver,
-        env: Option<Variables>,
+        env: Variables,
     ) -> Result<(), DriverError> {
         self.supported_driver = s.clone();
 

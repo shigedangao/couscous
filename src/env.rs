@@ -1,13 +1,23 @@
 use std::env;
 
-#[derive(Debug, Default, Clone)]
+#[derive(Debug, Clone)]
 pub struct Variables {
     pub ollama_host: String,
     pub ollama_port: String,
     pub grpc_address: String,
 }
 
-pub(crate) fn load_env_variables() -> Option<Variables> {
+impl Default for Variables {
+    fn default() -> Self {
+        Self {
+            ollama_host: "http://localhost".to_string(),
+            ollama_port: "11434".to_string(),
+            grpc_address: "127.0.0.1:50051".to_string(),
+        }
+    }
+}
+
+pub(crate) fn load_env_variables() -> Variables {
     if let Err(err) = dotenvy::dotenv() {
         println!("Unable to load the env due to {}", err)
     }
@@ -25,5 +35,5 @@ pub(crate) fn load_env_variables() -> Option<Variables> {
         }
     }
 
-    Some(var)
+    var
 }
