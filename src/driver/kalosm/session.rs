@@ -32,19 +32,14 @@ pub(crate) fn create_session(
                 }
             }
 
-            if let Err(err) = chat_handler
-                .session()
-                .map(|session| session.to_bytes().ok())
-                .map(async |bytes| {
-                    if let Some(contents) = bytes {
-                        tokio::fs::write(&path, contents)
-                            .await
-                            .map_err(|err| println!("Unable to store the session {:?}", err))
-                            .ok();
-                    }
-                })
-            {
-                println!("Error while getting the session {}", err);
+            if let Ok(session) = chat_handler.session() {
+                if let Err(err) = session
+                    .to_bytes()
+                    .map(|bytes| std::fs::write(&path, bytes))
+                    .map_err(|err| dbg!(err))
+                {
+                    dbg!(err);
+                }
             }
 
             if let Err(err) = owned_chat_tx.send(CHAT_END_SIGNAL.to_string()).await {
